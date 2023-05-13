@@ -37,11 +37,19 @@ test *parameters:
 # Format the code
 format:
   black src
+  black tests
+
   isort src
+  isort tests
 
 # Apply linting on code
 lint: 
   ruff src
+  ruff tests
+
+lint-fix:
+  ruff src --fix
+  ruff tests --fix
 
 # Format then lint the code
 format-lint: format lint
