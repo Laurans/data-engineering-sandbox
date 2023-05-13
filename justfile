@@ -4,10 +4,6 @@ ENV_FILE := '.envrc'
 default: 
   @just --list
 
-# Run tests
-test:
-  poetry run pytest
-
 # Start containers
 start: && pg_isready
   nerdctl compose up -d --env-file {{ENV_FILE}}
@@ -21,16 +17,34 @@ start: && pg_isready
 init-db:
   poetry run python src/db_init.py
 
-
-# Stop containers
-stop:
-  nerdctl compose down
+# Clean up containers
+clean:
+  nerdctl compose down -v --env-file {{ENV_FILE}}
 
 # Load data into databases
 load-data:
   # Add your data loading commands here
   echo ""
 
-# Clean up containers
-clean:
-  nerdctl compose down -v --env-file {{ENV_FILE}}
+# Download books dataset in data folder from Kaggle
+download-books:
+   kaggle datasets download -p data/ --unzip  ishikajohari/best-books-10k-multi-genre-data
+
+# Run tests
+test *parameters:
+  poetry run pytest -v {{parameters}}
+
+# Format the code
+format:
+  black src
+  isort src
+
+# Apply linting on code
+lint: 
+  ruff src
+
+# Format then lint the code
+format-lint: format lint
+
+debug_justfile:
+  echo ${POSTGRES_DB}
