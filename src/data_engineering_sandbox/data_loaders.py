@@ -1,9 +1,10 @@
 from pathlib import Path
-from .connectors import PostgresConnector
-import pandas as pd
-from sqlalchemy import text, TextClause
-from .string_utils import sanitize_sql_identifier
 from typing import Literal
+
+import pandas as pd
+
+from .connectors import PostgresConnector
+from .string_utils import sanitize_sql_identifier
 
 
 class FromCSVtoPostgres:

@@ -1,9 +1,9 @@
-from data_engineering_sandbox.data_loaders import FromCSVtoPostgres
-from data_engineering_sandbox.connectors import get_postgres_url
 import pytest
 from sqlalchemy import create_engine, inspect, text
+
+from data_engineering_sandbox.connectors import get_postgres_url
+from data_engineering_sandbox.data_loaders import FromCSVtoPostgres
 from tests import data_folder
-from loguru import logger
 
 
 @pytest.fixture(scope="module")

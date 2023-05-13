@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, TextClause
+from sqlalchemy import TextClause, create_engine
 from sqlalchemy.engine.url import URL
 
 
