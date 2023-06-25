@@ -5,8 +5,11 @@ default:
   @just --list
 
 # Start containers
-start: && pg_isready
-  nerdctl compose up -d --env-file {{ENV_FILE}}
+start_postgres: && pg_isready
+  nerdctl compose up -d --env-file {{ENV_FILE}} --profile postgres
+
+start_mongo:
+  nerdctl compose --profile mongodb up -d --env-file {{ENV_FILE}} 
 
 # Check is pg is ready before continuing
 @pg_isready:
