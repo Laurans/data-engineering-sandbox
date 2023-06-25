@@ -37,3 +37,6 @@ line-length = 88
 
 [tool.isort]
 profile = "black"
+
+[tool.poetry.scripts]
+load_sample_data = 'data_engineering_sandbox.scripts.load_sample_data:cli'
