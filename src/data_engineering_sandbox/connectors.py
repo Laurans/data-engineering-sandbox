@@ -2,6 +2,42 @@ import os
 
 from sqlalchemy import TextClause, create_engine
 from sqlalchemy.engine.url import URL
+from pymongo import MongoClient
+
+
+def get_database_values(
+    env_var_suffix,
+    default_host,
+    default_port,
+    default_username,
+    default_password,
+    default_db,
+):
+    database_host = os.getenv(f"{env_var_suffix}_HOST", default_host)
+    database_port = os.getenv(f"{env_var_suffix}_PORT", default_port)
+    database_username = os.getenv(f"{env_var_suffix}_USER", default_username)
+    database_password = os.getenv(f"{env_var_suffix}_PASSWORD", default_password)
+    database_name = os.getenv(f"{env_var_suffix}_DB", default_db)
+
+    return (
+        database_host,
+        database_port,
+        database_username,
+        database_password,
+        database_name,
+    )
+
+
+def get_values_postgres_env(env_var_suffix="POSTGRES"):
+    return get_database_values(
+        env_var_suffix, "localhost", "5432", "postgres", "postgres", "mydb"
+    )
+
+
+def get_values_mongo_env(env_var_suffix="MONGO"):
+    return get_database_values(
+        env_var_suffix, "localhost", "27017", "mongo", "mongo", "mydb"
+    )
 
 
 def get_postgres_url(env_var_suffix="POSTGRES") -> URL:
@@ -12,11 +48,13 @@ def get_postgres_url(env_var_suffix="POSTGRES") -> URL:
     URL
         sqlalchemy url object
     """
-    database_host = os.getenv(f"{env_var_suffix}_HOST", "localhost")
-    database_port = os.getenv(f"{env_var_suffix}_PORT", "5432")
-    database_username = os.getenv(f"{env_var_suffix}_USER", "postgres")
-    database_password = os.getenv(f"{env_var_suffix}_PASSWORD", "postgres")
-    database_name = os.getenv(f"{env_var_suffix}_DB", "mydb")
+    (
+        database_host,
+        database_port,
+        database_username,
+        database_password,
+        database_name,
+    ) = get_values_postgres_env(env_var_suffix)
 
     db_url = URL.create(
         drivername="postgresql",
