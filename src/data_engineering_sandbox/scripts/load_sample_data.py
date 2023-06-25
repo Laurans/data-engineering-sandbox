@@ -49,8 +49,7 @@ def mongodb(container_data):
             )
             command_line = cmd_part1 + " " + cmd_part2
             args = shlex.split(command_line)
-            output = subprocess.run(args, capture_output=True)
-            logger.debug(output.stderr)
+            subprocess.run(args, capture_output=True, check=True)
 
 
 if __name__ == "__main__":
