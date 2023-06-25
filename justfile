@@ -8,17 +8,13 @@ default:
 start_postgres: && pg_isready
   nerdctl compose up -d --env-file {{ENV_FILE}} --profile postgres
 
-start_mongo:
+start_mongodb:
   nerdctl compose --profile mongodb up -d --env-file {{ENV_FILE}} 
 
 # Check is pg is ready before continuing
 @pg_isready:
   sleep 1
   until `nerdctl exec data-engineering-sandbox_postgres_1 pg_isready -q`; do echo "Waiting for postgres"; sleep 2; done
-
-# Initialize the database
-init-db:
-  poetry run python src/db_init.py
 
 # Clean up containers
 clean:
