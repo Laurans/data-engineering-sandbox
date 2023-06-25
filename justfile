@@ -25,9 +25,8 @@ clean:
   nerdctl compose down -v --env-file {{ENV_FILE}}
 
 # Load data into databases
-load-data:
-  # Add your data loading commands here
-  echo ""
+load-sample-data database_name:
+  load_sample_data {{database_name}}
 
 # Download books dataset in data folder from Kaggle
 download-books:
