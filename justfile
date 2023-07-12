@@ -14,11 +14,11 @@ start_mongodb:
 # Check is pg is ready before continuing
 @pg_isready:
   sleep 1
-  until `nerdctl exec data-engineering-sandbox_postgres_1 pg_isready -q`; do echo "Waiting for postgres"; sleep 2; done
+  until `nerdctl exec sandbox-postgres pg_isready -q`; do echo "Waiting for postgres"; sleep 2; done
 
 # Clean up containers
 clean:
-  nerdctl compose down -v --env-file {{ENV_FILE}}
+  nerdctl compose down -v --env-file {{ENV_FILE}} --remove-orphans
 
 # Load data into databases
 load-sample-data database_name:
