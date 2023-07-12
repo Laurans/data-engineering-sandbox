@@ -1,8 +1,9 @@
-version: '3.9'
+version: '3'
 services:
   postgres:
     profiles:
       - postgres
+    container_name: sandbox-postgres
     image: 'postgres:15-alpine'
     restart: always
     ports:
@@ -14,6 +15,7 @@ services:
   mongodb:
     profiles:
       - mongodb
+    container_name: sandbox-mongodb
     image: mongo:4.2-bionic
     ports:
       - 27017:27017
