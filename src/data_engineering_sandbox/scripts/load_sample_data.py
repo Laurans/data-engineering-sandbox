@@ -1,10 +1,15 @@
-import click
-import subprocess
-from loguru import logger
-from data_engineering_sandbox.const import DATA_DIR
-from data_engineering_sandbox.connectors import get_values_mongo_env
 import shlex
+import subprocess
 from pathlib import Path
+
+import click
+from data_engineering_sandbox.connectors import (
+    get_postgres_url,
+    get_values_mongo_env,
+)
+from data_engineering_sandbox.const import DATA_DIR
+from loguru import logger
+from sqlalchemy import create_engine, text
 
 
 def get_samples_sub_directories():
@@ -31,7 +36,7 @@ def mongodb(container_data):
     for directory in get_samples_sub_directories():
         for data_file in directory.iterdir():
             data_file = container_datadir / data_file.relative_to(DATA_DIR)
-            cmd_part1 = "nerdctl exec data-engineering-sandbox_mongodb_1"
+            cmd_part1 = "nerdctl exec sandbox-mongodb"
             (
                 database_host,
                 database_port,
@@ -42,7 +47,7 @@ def mongodb(container_data):
 
             cmd_part2 = (
                 f"mongoimport --drop --host {database_host} --port {database_port} "
-                f"--db {directory.name} --collection {data_file.name} "
+                f"--db {directory.name} --collection {data_file.stem} "
                 f"--file {data_file} "
                 "--authenticationDatabase admin "
                 f"-u {database_username} -p {database_password}"
