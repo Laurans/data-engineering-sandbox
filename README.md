@@ -8,7 +8,6 @@ The Data Engineering Sandbox is an environment designed for experimentation with
 - Local environment variables management with `direnv`.
 - Convenient task execution with the `just` command.
 - Container management with `nerdctl` (a drop-in replacement for `docker-compose`).
-- Integration with Kaggle for dataset downloads.
 
 ## Prerequisites
 
@@ -20,9 +19,6 @@ Make sure you have the following dependencies installed on your system:
 - just (https://github.com/casey/just)
 - nerdctl (https://github.com/containerd/nerdctl) - can be installed with "Rancher Desktop" (https://rancherdesktop.io/)
 
-## Kaggle API Token
-
-To download datasets through the Kaggle public API, you will need a Kaggle API token. Follow the instructions in the [Kaggle documentation](https://www.kaggle.com/docs/api#authentication) to create and obtain your API token.
 
 ## Getting Started
 
@@ -62,3 +58,19 @@ direnv allow
 - Stop containers: just stop
 - Load data into databases: just load-data
 - Clean up containers: just clean
+
+
+# Datasets sources
+
+Datasets comes from this repo [https://github.com/neelabalan/mongodb-sample-dataset](https://github.com/neelabalan/mongodb-sample-dataset). 
+
+In your `./data` folder, you should have
+- sample_airbnb
+- sample_analytics	
+- sample_geospatial	
+- sample_mflix		
+- sample_supplies		
+- sample_training		
+- sample_weatherdata
+
+Note: json file are in a special format for mongodb import. So you need to transform it to load them using pandas.
