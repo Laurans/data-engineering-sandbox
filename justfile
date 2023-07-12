@@ -5,26 +5,24 @@ default:
   @just --list
 
 # Start containers
-start: && pg_isready
-  nerdctl compose up -d --env-file {{ENV_FILE}}
+start_postgres: && pg_isready
+  nerdctl compose up -d --env-file {{ENV_FILE}} --profile postgres
+
+start_mongodb:
+  nerdctl compose --profile mongodb up -d --env-file {{ENV_FILE}} 
 
 # Check is pg is ready before continuing
 @pg_isready:
   sleep 1
-  until `nerdctl exec data-engineering-sandbox_postgres_1 pg_isready -q`; do echo "Waiting for postgres"; sleep 2; done
-
-# Initialize the database
-init-db:
-  poetry run python src/db_init.py
+  until `nerdctl exec sandbox-postgres pg_isready -q`; do echo "Waiting for postgres"; sleep 2; done
 
 # Clean up containers
 clean:
-  nerdctl compose down -v --env-file {{ENV_FILE}}
+  nerdctl compose down -v --env-file {{ENV_FILE}} --remove-orphans
 
 # Load data into databases
-load-data:
-  # Add your data loading commands here
-  echo ""
+load-sample-data database_name:
+  load_sample_data {{database_name}}
 
 # Download books dataset in data folder from Kaggle
 download-books:
