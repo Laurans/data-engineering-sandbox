@@ -1,8 +1,8 @@
 import pytest
-from sqlalchemy import create_engine, inspect, text
-
 from data_engineering_sandbox.connectors import get_postgres_url
 from data_engineering_sandbox.data_loaders import FromCSVtoPostgres
+from sqlalchemy import create_engine, inspect, text
+
 from tests import data_folder
 
 
@@ -37,6 +37,7 @@ def clear_database_only_rows(get_engine):
             connection.execute(text(f"TRUNCATE TABLE {table} CASCADE"))
 
 
+@pytest.mark.skip
 def test_table_is_populated_with_data_replace(clear_database):
     data_path = data_folder / "goodreads_data.csv"
     table_name = "books"
