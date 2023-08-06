@@ -9,7 +9,9 @@ from data_engineering_sandbox.connectors import (
 )
 from data_engineering_sandbox.const import DATA_DIR
 from loguru import logger
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
+
+from data_engineering_sandbox.bson_to_sql import load_mflix_files
 
 
 def get_samples_sub_directories():
@@ -25,6 +27,10 @@ def cli():
 @cli.command()
 def postgres():
     logger.info("Load sample data into postgres database")
+    engine = create_engine(get_postgres_url())
+    for directory in get_samples_sub_directories():
+        if directory.name.split("_")[1] == "mflix":
+            load_mflix_files(directory, engine)
 
 
 @cli.command()
