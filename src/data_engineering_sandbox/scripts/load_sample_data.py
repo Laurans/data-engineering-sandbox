@@ -11,7 +11,7 @@ from data_engineering_sandbox.const import DATA_DIR
 from loguru import logger
 from sqlalchemy import create_engine
 
-from data_engineering_sandbox.bson_to_sql import load_mflix_files
+from data_engineering_sandbox.bson_to_sql import load_mflix_files, load_geospatial_files
 
 
 def get_samples_sub_directories():
@@ -28,9 +28,12 @@ def cli():
 def postgres():
     logger.info("Load sample data into postgres database")
     engine = create_engine(get_postgres_url())
+    name_fn_map = {"mflix": load_mflix_files, "geospatial": load_geospatial_files}
+
     for directory in get_samples_sub_directories():
-        if directory.name.split("_")[1] == "mflix":
-            load_mflix_files(directory, engine)
+        key = directory.name.split("_")[1]
+        if key in name_fn_map.keys():
+            name_fn_map[key](directory, engine)
 
 
 @cli.command()
