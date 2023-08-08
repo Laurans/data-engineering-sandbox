@@ -1,31 +1,17 @@
 from datetime import datetime
-from typing import Optional
 
-from sqlalchemy import DateTime, Float, String
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TEXT, TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from typing_extensions import Annotated
-from sqlalchemy.schema import CreateSchema
+
 from sqlalchemy import MetaData
-
-
-varchar = Annotated[str, 24]
-ostr = Optional[str]
+from .types import varchar, TYPE_ANNOTATION_MAP
+from .common import _create_tables
 
 metadata_obj = MetaData(schema="mflix")
 
 
 class Base(DeclarativeBase):
     metadata = metadata_obj
-
-    type_annotation_map = {
-        varchar: String(24),
-        dict: JSONB,
-        str: TEXT,
-        datetime: TIMESTAMP,
-        list[str]: ARRAY(TEXT, dimensions=1),
-        list[float]: ARRAY(Float, dimensions=1),
-    }
+    type_annotation_map = TYPE_ANNOTATION_MAP
 
 
 class User(Base):
@@ -35,6 +21,7 @@ class User(Base):
     name: Mapped[str]
     email: Mapped[str]
     password: Mapped[str]
+    preferences: Mapped[dict] = mapped_column(nullable=True)
 
 
 class Theater(Base):
@@ -93,7 +80,4 @@ class Comment(Base):
 
 
 def create_tables(engine):
-    with engine.connect() as connection:
-        connection.execute(CreateSchema(Base.metadata.schema, if_not_exists=True))
-        connection.commit()
-    Base.metadata.create_all(engine)
+    _create_tables(engine, Base)
