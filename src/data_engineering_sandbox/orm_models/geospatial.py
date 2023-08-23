@@ -12,7 +12,9 @@ class Base(DeclarativeBase):
     type_annotation_map = TYPE_ANNOTATION_MAP
 
 
-class Shipwrecks(Base):
+class Shipwreck(Base):
+    __tablename__ = "shipwrecks"
+
     id: Mapped[varchar] = mapped_column(primary_key=True)
     recrd: Mapped[Optional[str]] = mapped_column(nullable=True)
     vesslterms: Mapped[Optional[str]] = mapped_column(nullable=True)
@@ -26,7 +28,7 @@ class Shipwrecks(Base):
     history: Mapped[Optional[str]] = mapped_column(nullable=True)
     quasou: Mapped[Optional[str]] = mapped_column(nullable=True)
     watlev: Mapped[Optional[str]] = mapped_column(nullable=True)
-    coordinate: Mapped[list[float]]
+    coordinates: Mapped[list[float]]
 
 
 def create_tables(engine):
