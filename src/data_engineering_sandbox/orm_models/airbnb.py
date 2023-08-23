@@ -3,6 +3,7 @@ from sqlalchemy import MetaData
 from .types import varchar, TYPE_ANNOTATION_MAP
 from .common import _create_tables
 from datetime import datetime
+from typing import Optional
 
 metadata_obj = MetaData(schema="airbnb")
 
@@ -12,11 +13,9 @@ class Base(DeclarativeBase):
     type_annotation_map = TYPE_ANNOTATION_MAP
 
 
-def create_tables(engine):
-    _create_tables(engine, Base)
+class Listing(Base):
+    __tablename__ = "listings"
 
-
-class ListingsAndReviews(Base):
     id: Mapped[varchar] = mapped_column(primary_key=True)
     listing_url: Mapped[str]
     name: Mapped[str]
@@ -53,20 +52,24 @@ class ListingsAndReviews(Base):
     images: Mapped[dict]
     availability: Mapped[dict]
     review_scores: Mapped[dict]
-    address_id = Mapped[int]
+    address_id: Mapped[int]
+    weekly_price: Mapped[Optional[float]] = mapped_column(nullable=True)
+    monthly_price: Mapped[Optional[float]] = mapped_column(nullable=True)
 
 
-class Hosts(Base):
+class Host(Base):
+    __tablename__ = "hosts"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     url: Mapped[str]
     name: Mapped[str]
     location: Mapped[str]
     about: Mapped[str]
-    response_time: Mapped[str]
+    response_time: Mapped[Optional[str]] = mapped_column(nullable=True)
     thumbnail_url: Mapped[str]
     picture_url: Mapped[str]
     neighbourhood: Mapped[str]
-    response_rate: Mapped[int]
+    response_rate: Mapped[Optional[int]] = mapped_column(nullable=True)
     is_superhost: Mapped[bool]
     has_profile_pic: Mapped[bool]
     identity_verified: Mapped[bool]
@@ -75,7 +78,9 @@ class Hosts(Base):
     verifications: Mapped[list[str]]
 
 
-class Addresses(Base):
+class Address(Base):
+    __tablename__ = "adresses"
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     street: Mapped[str]
     suburb: Mapped[str]
@@ -86,10 +91,16 @@ class Addresses(Base):
     location: Mapped[dict]
 
 
-class Reviews(Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
     date: Mapped[datetime]
     listing_id: Mapped[int]
     reviewer_id: Mapped[int]
     reviewer_name: Mapped[str]
     comments: Mapped[str]
+
+
+def create_tables(engine):
+    _create_tables(engine, Base)
