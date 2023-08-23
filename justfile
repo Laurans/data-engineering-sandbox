@@ -22,7 +22,7 @@ clean:
 
 # Load data into databases
 load-sample-data database_name:
-  load_sample_data {{database_name}}
+  poetry run load_sample_data {{database_name}}
 
 # Download books dataset in data folder from Kaggle
 download-books:
