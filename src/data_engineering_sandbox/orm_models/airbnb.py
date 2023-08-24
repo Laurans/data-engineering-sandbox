@@ -22,37 +22,38 @@ class Listing(Base):
     summary: Mapped[str]
     space: Mapped[str]
     description: Mapped[str]
-    neighborhood_overview: Mapped[str]
-    notes: Mapped[str]
-    transit: Mapped[str]
-    access: Mapped[str]
-    interaction: Mapped[str]
-    house_rules: Mapped[str]
-    property_type: Mapped[str]
-    room_type: Mapped[str]
-    bed_type: Mapped[str]
-    minimum_nights: Mapped[str]
-    maximum_nights: Mapped[str]
-    cancellation_policy: Mapped[str]
-    last_scraped: Mapped[datetime]
-    calendar_last_scraped: Mapped[datetime]
-    first_review: Mapped[datetime]
-    last_review: Mapped[datetime]
-    accommodates: Mapped[int]
-    bedrooms: Mapped[int]
-    beds: Mapped[int]
-    number_of_reviews: Mapped[int]
-    bathrooms: Mapped[float]
-    amenities: Mapped[list[str]]
-    price: Mapped[float]
-    security_deposit: Mapped[float]
-    cleaning_fee: Mapped[float]
-    extra_people: Mapped[float]
-    guests_included: Mapped[float]
-    images: Mapped[dict]
-    availability: Mapped[dict]
-    review_scores: Mapped[dict]
+    neighborhood_overview: Mapped[Optional[str]] = mapped_column(nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(nullable=True)
+    transit: Mapped[Optional[str]] = mapped_column(nullable=True)
+    access: Mapped[Optional[str]] = mapped_column(nullable=True)
+    interaction: Mapped[Optional[str]] = mapped_column(nullable=True)
+    house_rules: Mapped[Optional[str]] = mapped_column(nullable=True)
+    property_type: Mapped[Optional[str]] = mapped_column(nullable=True)
+    room_type: Mapped[Optional[str]] = mapped_column(nullable=True)
+    bed_type: Mapped[Optional[str]] = mapped_column(nullable=True)
+    minimum_nights: Mapped[Optional[str]] = mapped_column(nullable=True)
+    maximum_nights: Mapped[Optional[str]] = mapped_column(nullable=True)
+    cancellation_policy: Mapped[Optional[str]] = mapped_column(nullable=True)
+    last_scraped: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    calendar_last_scraped: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    first_review: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    last_review: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    accommodates: Mapped[Optional[int]] = mapped_column(nullable=True)
+    bedrooms: Mapped[Optional[int]] = mapped_column(nullable=True)
+    beds: Mapped[Optional[int]] = mapped_column(nullable=True)
+    number_of_reviews: Mapped[Optional[int]] = mapped_column(nullable=True)
+    bathrooms: Mapped[Optional[float]] = mapped_column(nullable=True)
+    amenities: Mapped[Optional[list[str]]] = mapped_column(nullable=True)
+    price: Mapped[Optional[float]] = mapped_column(nullable=True)
+    security_deposit: Mapped[Optional[float]] = mapped_column(nullable=True)
+    cleaning_fee: Mapped[Optional[float]] = mapped_column(nullable=True)
+    extra_people: Mapped[Optional[float]] = mapped_column(nullable=True)
+    guests_included: Mapped[Optional[float]] = mapped_column(nullable=True)
+    images: Mapped[Optional[dict]] = mapped_column(nullable=True)
+    availability: Mapped[Optional[dict]] = mapped_column(nullable=True)
+    review_scores: Mapped[Optional[dict]] = mapped_column(nullable=True)
     address_id: Mapped[int]
+    host_id: Mapped[int]
     weekly_price: Mapped[Optional[float]] = mapped_column(nullable=True)
     monthly_price: Mapped[Optional[float]] = mapped_column(nullable=True)
 
