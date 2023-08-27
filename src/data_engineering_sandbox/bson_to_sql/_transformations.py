@@ -1,5 +1,5 @@
 from attrs import define, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 class NestedDataTransformer:
     table_definition: "DeclarativeAttributeIntercept"
     transformation_fn: "Callable" = field(default=lambda x: x)
+    relationship_key: Optional[str] = field(default=None)
 
     def __call__(self, record):
         return self.transformation_fn(record)
