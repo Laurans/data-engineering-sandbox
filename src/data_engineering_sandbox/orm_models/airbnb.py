@@ -52,6 +52,7 @@ class Listing(Base):
     images: Mapped[Optional[dict]] = mapped_column(nullable=True)
     availability: Mapped[Optional[dict]] = mapped_column(nullable=True)
     review_scores: Mapped[Optional[dict]] = mapped_column(nullable=True)
+    reviews_per_month: Mapped[Optional[int]] = mapped_column(nullable=True)
     address_id: Mapped[int]
     host_id: Mapped[int]
     weekly_price: Mapped[Optional[float]] = mapped_column(nullable=True)
