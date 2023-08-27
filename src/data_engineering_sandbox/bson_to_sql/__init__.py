@@ -9,7 +9,8 @@ import psycopg2
 from bson.objectid import ObjectId
 from bson.decimal128 import Decimal128
 from loguru import logger
-
+from sqlalchemy.dialects.sqlite import insert
+import tqdm
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -35,23 +36,27 @@ def _load_record(
     session: Session, content: dict, table_definition: "DeclarativeAttributeIntercept"
 ):
     try:
-        session.add(table_definition(**content))
-        breakpoint()
+        datapoint = table_definition(**content)
+        session.add(datapoint)  # TODO: look if we can do a on conflict to nothing
+        session.flush()
         session.commit()
-        # TODO: Get the inserted id
     except sqlalchemy.exc.IntegrityError:
         pass
     except sqlalchemy.exc.DataError as e:
         if type(e.orig) == psycopg2.errors.InvalidTextRepresentation:
             pass
     except sqlalchemy.exc.PendingRollbackError as e:
-        if "psycopg2.errors.InvalidTextRepresentation" in e.args[0]:
+        if (
+            "psycopg2.errors.InvalidTextRepresentation" in e.args[0]
+            or "psycopg2.errors.UniqueViolation" in e.args[0]
+        ):
             pass
         else:
             raise e
     except Exception as e:
         breakpoint()
         raise e
+    return datapoint.id
 
 
 def _load_nested_table(
@@ -70,11 +75,14 @@ def _load_nested_table(
                 for subsubcontent in content.pop(key)
             ]
         elif key in content.keys() and isinstance(content[key], dict):
-            _load_record(
+            datapoint_id = _load_record(
                 session,
                 record_transformation(content.pop(key)),
                 record_transformation.table_definition,
             )
+
+            if record_transformation.relationship_key:
+                content[record_transformation.relationship_key] = datapoint_id
     return content
 
 
@@ -90,7 +98,7 @@ def _load_bson_file_in_postgres(
             logger.info(f"Loading data from {data_file} ...")
             raw_content = fp.readlines()
 
-            for line in raw_content:
+            for line in tqdm.tqdm(raw_content):
                 content = loads(line)
                 content = normalize_id(content)
 
@@ -138,8 +146,11 @@ def load_airbnb_files(directory: "Path", engine: "Engine"):
                     "host": NestedDataTransformer(
                         airbnb.Host,
                         lambda x: {k.replace("host_", ""): v for k, v in x.items()},
+                        relationship_key="host_id",
                     ),
-                    "address": NestedDataTransformer(airbnb.Address),
+                    "address": NestedDataTransformer(
+                        airbnb.Address, relationship_key="address_id"
+                    ),
                     "reviews": NestedDataTransformer(airbnb.Review, normalize_id),
                 }
 
