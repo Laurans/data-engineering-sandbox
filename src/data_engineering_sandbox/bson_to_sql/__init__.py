@@ -1,16 +1,24 @@
-from typing import Any, TYPE_CHECKING
-from data_engineering_sandbox.orm_models import airbnb, mflix, geospatial
-from bson.json_util import loads
-from sqlalchemy.orm import Session
-import sqlalchemy
-from json import JSONEncoder
 import datetime
+from json import JSONEncoder
+from typing import TYPE_CHECKING, Any
+
 import psycopg2
-from bson.objectid import ObjectId
-from bson.decimal128 import Decimal128
-from loguru import logger
-from sqlalchemy.dialects.sqlite import insert
+import sqlalchemy
 import tqdm
+from bson.decimal128 import Decimal128
+from bson.json_util import loads
+from bson.objectid import ObjectId
+from loguru import logger
+from sqlalchemy.orm import Session
+
+from data_engineering_sandbox.orm_models import (
+    airbnb,
+    analytics,
+    geospatial,
+    mflix,
+    supplies,
+    weatherdata,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -69,7 +77,10 @@ def _load_nested_table(
             [
                 _load_record(
                     session,
-                    record_transformation(subsubcontent),
+                    record_transformation(
+                        subsubcontent,
+                        content.get(record_transformation.data_source_key),
+                    ),
                     record_transformation.table_definition,
                 )
                 for subsubcontent in content.pop(key)
@@ -77,11 +88,17 @@ def _load_nested_table(
         elif key in content.keys() and isinstance(content[key], dict):
             datapoint_id = _load_record(
                 session,
-                record_transformation(content.pop(key)),
+                record_transformation(
+                    content.pop(key),
+                    content.get(record_transformation.data_source_key),
+                ),
                 record_transformation.table_definition,
             )
 
-            if record_transformation.relationship_key:
+            if (
+                record_transformation.relationship_key
+                and not record_transformation.add_relationship_in_nested
+            ):
                 content[record_transformation.relationship_key] = datapoint_id
     return content
 
@@ -157,3 +174,67 @@ def load_airbnb_files(directory: "Path", engine: "Engine"):
         _load_bson_file_in_postgres(
             data_file, table_definition, engine, nested_table_definitions
         )
+
+
+def load_analytics_files(directory: "Path", engine: "Engine"):
+    analytics.create_tables(engine)
+    nested_table_definitions = {}
+    for data_file in directory.iterdir():
+        match data_file.stem:
+            case "accounts":
+                table_definition = analytics.Account
+            case "customers":
+                table_definition = analytics.Customer
+                nested_table_definitions = {
+                    "accounts": NestedDataTransformer(
+                        analytics.CustomersXAccount,
+                        lambda x: {"account_id": x},
+                        relationship_key="customer_id",
+                        add_relationship_in_nested=True,
+                        data_source_key="id",
+                    )
+                }
+            case "transactions":
+                table_definition = analytics.TransactionMetadata
+                nested_table_definitions = {
+                    "transactions": NestedDataTransformer(
+                        analytics.Transaction,
+                        relationship_key="account_id",
+                        add_relationship_in_nested=True,
+                        data_source_key="account_id",
+                    )
+                }
+        _load_bson_file_in_postgres(
+            data_file, table_definition, engine, nested_table_definitions
+        )
+
+
+def load_supplies_files(directory: "Path", engine: "Engine"):
+    supplies.create_tables(engine)
+    nested_table_definitions = {}
+    for data_file in directory.iterdir():
+        match data_file.stem:
+            case "sales":
+                table_definition = supplies.Sale
+                nested_table_definitions = {
+                    "items": NestedDataTransformer(
+                        supplies.Item,
+                        relationship_key="sale_id",
+                        add_relationship_in_nested=True,
+                        data_source_key="id",
+                    )
+                }
+
+        _load_bson_file_in_postgres(
+            data_file, table_definition, engine, nested_table_definitions
+        )
+
+
+def load_weatherdata_files(directory: "Path", engine: "Engine"):
+    weatherdata.create_tables(engine)
+    for data_file in directory.iterdir():
+        match data_file.stem:
+            case "data":
+                table_definition = weatherdata.Data
+
+        _load_bson_file_in_postgres(data_file, table_definition, engine)
