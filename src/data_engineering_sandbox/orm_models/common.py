@@ -1,5 +1,5 @@
-from sqlalchemy.schema import CreateSchema
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.schema import CreateSchema
 
 
 def _create_tables(engine, base: DeclarativeBase):

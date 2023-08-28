@@ -1,9 +1,11 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import MetaData
-from .types import varchar, TYPE_ANNOTATION_MAP
-from .common import _create_tables
 from datetime import datetime
 from typing import Optional
+
+from sqlalchemy import MetaData
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+from .common import _create_tables
+from .types import TYPE_ANNOTATION_MAP, varchar
 
 metadata_obj = MetaData(schema="airbnb")
 

@@ -2,7 +2,6 @@ import os
 
 from sqlalchemy import TextClause, create_engine
 from sqlalchemy.engine.url import URL
-from pymongo import MongoClient
 
 
 def get_database_values(

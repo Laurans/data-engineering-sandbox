@@ -1,7 +1,8 @@
-from typing_extensions import Annotated
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TEXT, TIMESTAMP
-from sqlalchemy import Float, String
 from datetime import datetime
+
+from sqlalchemy import Float, String
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TEXT, TIMESTAMP
+from typing_extensions import Annotated
 
 varchar = Annotated[str, 24]
 
