@@ -5,10 +5,10 @@ default:
   @just --list
 
 # Start containers
-start_postgres: && pg_isready
+start-postgres: && pg_isready
   nerdctl compose up -d --env-file {{ENV_FILE}} --profile postgres
 
-start_mongodb:
+start-mongodb:
   nerdctl compose --profile mongodb up -d --env-file {{ENV_FILE}} 
 
 # Check is pg is ready before continuing
@@ -23,10 +23,6 @@ clean:
 # Load data into databases
 load-sample-data database_name:
   poetry run load_sample_data {{database_name}}
-
-# Download books dataset in data folder from Kaggle
-download-books:
-   kaggle datasets download -p data/ --unzip  ishikajohari/best-books-10k-multi-genre-data
 
 # Run tests
 test *parameters:
@@ -51,6 +47,3 @@ lint-fix:
 
 # Format then lint the code
 format-lint: format lint
-
-debug_justfile:
-  echo ${POSTGRES_DB}
