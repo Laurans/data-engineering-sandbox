@@ -1,8 +1,6 @@
 import os
 
-from sqlalchemy import TextClause, create_engine
 from sqlalchemy.engine.url import URL
-from pymongo import MongoClient
 
 
 def get_database_values(
@@ -65,15 +63,3 @@ def get_postgres_url(env_var_suffix="POSTGRES") -> URL:
         database=database_name,
     )
     return db_url
-
-
-class PostgresConnector:
-    def __init__(self) -> None:
-        self.engine = create_engine(get_postgres_url(), echo=True)
-
-    def execute_query(self, query: TextClause):
-        with self.engine.execution_options(
-            isolation_level="AUTOCOMMIT"
-        ).connect() as connection:
-            result = connection.execute(query)
-            return result
