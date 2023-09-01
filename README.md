@@ -53,11 +53,10 @@ direnv allow
 
 5. Execute tasks using the just command. Some available tasks include:
 
-- Run tests: just test
-- Start containers: just start
-- Stop containers: just stop
-- Load data into databases: just load-data
+- Start containers: just start-postgres
+- Load data into databases: just load-sample-data postgres
 - Clean up containers: just clean
+- List all commands available: just
 
 
 # Datasets sources
@@ -65,12 +64,30 @@ direnv allow
 Datasets comes from this repo [https://github.com/neelabalan/mongodb-sample-dataset](https://github.com/neelabalan/mongodb-sample-dataset). 
 
 In your `./data` folder, you should have
+
 - sample_airbnb
-- sample_analytics	
-- sample_geospatial	
-- sample_mflix		
-- sample_supplies		
-- sample_training		
+- sample_analytics
+- sample_geospatial
+- sample_mflix
+- sample_supplies
 - sample_weatherdata
 
 Note: json file are in a special format for mongodb import. So you need to transform it to load them using pandas.
+
+## Loading sample data in a database
+
+### Loading it in a postgres database
+
+```shell
+just start-postgres
+just load-sample-data postgres --without airbnb
+just clean
+```
+
+### Loading it in a mongodb 
+
+```shell
+just start-mongo
+just load-sample-data mongo
+just clean
+```
