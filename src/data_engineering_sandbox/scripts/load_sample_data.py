@@ -29,7 +29,9 @@ def cli():
 
 
 @cli.command()
-def postgres():
+@click.option("--with", "with_", multiple=True, default=None)
+@click.option("--without", multiple=True, default=None)
+def postgres(with_, without):
     logger.info("Load sample data into postgres database")
     engine = create_engine(get_postgres_url())
     name_fn_map = {
@@ -40,6 +42,10 @@ def postgres():
         "airbnb": load_airbnb_files,
         "analytics": load_analytics_files,
     }
+    if with_:
+        name_fn_map = {k: v for k, v in name_fn_map.items() if k in with_}
+    if without:
+        name_fn_map = {k: v for k, v in name_fn_map.items() if k not in without}
 
     for directory in get_samples_sub_directories():
         key = directory.name.split("_")[1]
